@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You 🤍</title>
+    <meta name="description" content="A personal message for someone very special.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Inter:ital,opsz,wght@0,14..32,300..600;1,14..32,300..600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="cursor-glow" class="cursor-glow"></div>
+    <canvas id="stars-canvas"></canvas>
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Pop-up bubble for secret words -->
+    <div id="secret-popup" class="secret-popup"><p id="secret-popup-text"></p></div>
+
+    <!-- Ambient music -->
+    <button id="ambient-toggle" class="ambient-btn hidden" aria-label="Toggle ambient music">
+        <svg class="ic-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <svg class="ic-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke-width="2.5"/></svg>
+    </button>
+    <audio id="ambient-audio" loop preload="auto"><source src="audio/background.mp3" type="audio/mpeg"><source src="audio/background.mpeg" type="audio/mpeg"><source src="audio/audio1.mp3" type="audio/mpeg"></audio>
+
+    <!-- Envelope easter egg -->
+    <div id="envelope-btn" class="envelope-btn hidden">
+        <div class="env-wobble"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg></div>
+    </div>
+    <div id="env-modal" class="modal-wrap"><div class="modal-bg"></div><div class="modal-box"><button class="modal-x">&times;</button><p class="letter-text">If you're reading this because you miss me…</p><p class="letter-text">just know that I probably miss you too.</p><p class="letter-text">And no matter how angry we get, you will always have a very special place in my life.</p><p class="letter-text">You're my little one. Always. 🌙</p><p class="letter-sign">— yours, always and forever 🤍</p></div></div>
+    <div id="resp-modal" class="modal-wrap"><div class="modal-bg"></div><div class="modal-box resp-box"><p id="resp-text" class="letter-text"></p><button class="resp-ok">okay 🤍</button></div></div>
+
+
+    <!-- ═══════════════════════════════════
+         📖 THE BOOK — INTERACTIVE MYSTERY
+    ═══════════════════════════════════ -->
+    <div class="book" id="book">
+
+        <!-- PAGE 0 — LANDING -->
+        <div class="page active" data-page="0">
+            <div class="pg-orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+            <div class="pg-center">
+                <div class="badge anim a1"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> a letter for you</div>
+                <h1 class="landing-h anim a2">Hey… I know you're<br>angry with me.</h1>
+                <div class="landing-div anim a3"></div>
+                <p class="landing-sub anim a4">But before you decide anything…</p>
+                <p class="landing-sub anim a5">I just want you to hear me once.</p>
+                <button class="enter-btn anim a6" id="enter-btn"><span>Give me 5 minutes…</span><div class="btn-shine"></div></button>
+                <p class="landing-tiny anim a7">I stayed up late making this for you. 🤍</p>
+            </div>
+            <div class="float-shapes"><span style="--d:8s;--x:12%;--s:.5">✦</span><span style="--d:11s;--x:28%;--s:.4">🤍</span><span style="--d:10s;--x:72%;--s:.5">✦</span><span style="--d:13s;--x:88%;--s:.6">🤍</span><span style="--d:9s;--x:50%;--s:.3">⋆</span></div>
+        </div>
+
+        <!-- PAGE 1 — I'M SORRY (typewriter + secret words) -->
+        <div class="page" data-page="1">
+            <div class="pg-deco"><div class="g-orb" style="--c:rgba(212,165,116,.06);top:15%;left:-8%"></div></div>
+            <div class="pg-scroll"><div class="pg-inner">
+                <h2 class="serif-title">I messed up.<br><span class="hand-accent">And I know it.</span></h2>
+                <div class="typewriter-block" id="tw-sorry">
+                    <p class="tw-line">I'm genuinely sorry for not being there for you when I should have been.</p>
+                    <p class="tw-line">You never had to ask me to be there. Somehow, <span class="secret-word" data-msg="You were always the first one to show up. Always.">you always just were</span>.</p>
+                    <p class="tw-line">No matter what was happening, you were there for me. You gave me your time, your <span class="secret-word" data-msg="Even when I didn't deserve it.">patience</span>, your comfort, and your presence.</p>
+                    <p class="tw-line">And somewhere along the way, I failed to give you the same.</p>
+                    <p class="tw-line">I didn't realise how much I had been unable to give you the <span class="secret-word" data-msg="You deserved so much more from me.">time and attention</span> you deserved.</p>
+                    <p class="tw-line accent-line">I know that hurt you.</p>
+                    <p class="tw-line">And I completely accept that.</p>
+                </div>
+                <div class="tap-hint">tap the <span class="glow-hint">glowing words</span> for hidden messages 🤍</div>
+            </div></div>
+        </div>
+
+        <!-- PAGE 2 — WHY YOU MATTER (mystery orbs) -->
+        <div class="page" data-page="2">
+            <div class="pg-deco"><div class="g-orb" style="--c:rgba(122,156,198,.05);top:25%;right:-10%"></div></div>
+            <div class="pg-scroll"><div class="pg-inner">
+                <h2 class="serif-title">You asked me why<br><span class="hand-accent">you matter to me.</span></h2>
+                <p class="soft-italic">Tap each one to find out.</p>
+                <div class="mystery-grid">
+                    <div class="mystery-orb" data-reveal="You are my comfort zone. 🏠"><div class="orb-glow"></div><span>?</span></div>
+                    <div class="mystery-orb" data-reveal="You know how to handle me when I'm angry. 🔥"><div class="orb-glow"></div><span>?</span></div>
+                    <div class="mystery-orb" data-reveal="You know what to do when I'm crying. 💧"><div class="orb-glow"></div><span>?</span></div>
+                    <div class="mystery-orb" data-reveal="You somehow know what I need even when I don't say it. 🤫"><div class="orb-glow"></div><span>?</span></div>
+                    <div class="mystery-orb" data-reveal="You understand my moods. 🌊"><div class="orb-glow"></div><span>?</span></div>
+                    <div class="mystery-orb" data-reveal="You understand my silence. 🤐"><div class="orb-glow"></div><span>?</span></div>
+                </div>
+                <div class="reveal-answer" id="orb-answer"></div>
+                <div class="big-line"><p class="typewrite" data-text="You know me."></p></div>
+            </div></div>
+        </div>
+
+        <!-- PAGE 3 — THE FIGHT (dramatic reveal) -->
+        <div class="page" data-page="3">
+            <div class="pg-deco"><div class="g-orb" style="--c:rgba(196,132,154,.05);top:40%;left:-10%"></div></div>
+            <div class="pg-scroll"><div class="pg-inner">
+                <h2 class="serif-title"><span class="hand-accent">You know what's weird?</span></h2>
+                <div class="txt-block">
+                    <p>I'm scared of <span class="secret-word" data-msg="I flinch every time someone yells near me.">fights</span>.</p>
+                    <p>When someone raises their voice, I get scared.</p>
+                    <p>I hate confrontation. I hate arguments.</p>
+                </div>
+                <p class="soft-italic" style="margin:28px 0 12px">But somehow…</p>
+                <p class="dramatic-text">you are the <span class="highlight-word">ONE</span> person I purposely fight with.</p>
+                <div class="click-reveal-zone">
+                    <button class="reveal-btn" id="why-btn">why? <span class="pulse-dot"></span></button>
+                    <div class="hidden-msg" id="why-msg">
+                        <div class="glow-bg"></div>
+                        <p class="glow-text">Because somewhere inside me, I've never been scared of losing you.</p>
+                        <p class="follow-text">Not because you don't matter. <br><em class="t-pink">But because you matter so much that even after the worst fights, a part of me still believes we'll find our way back to each other.</em></p>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+
+        <!-- PAGE 4 — MY SUNSHINE (unwrap cards) -->
+        <div class="page" data-page="4">
+            <div class="pg-deco"><div class="g-orb" style="--c:rgba(255,200,50,.05);top:20%;right:-10%"></div></div>
+            <div class="pg-scroll"><div class="pg-inner">
+                <h2 class="serif-title">Do you know what<br><span class="hand-accent">you are to me?</span></h2>
+                <p class="soft-italic">Tap to unwrap each one 🤍</p>
+                <div class="gift-grid">
+                    <div class="gift-box" data-emoji="☀️" data-title="My Ray of Sunshine" data-msg="Even on my darkest days, you somehow make everything a little brighter. You don't even have to try. You just do.">
+                        <div class="gift-wrap"><span class="gift-ribbon">🎀</span></div>
+                        <div class="gift-content"></div>
+                    </div>
+                    <div class="gift-box" data-emoji="🌟" data-title="My Ray of Hope" data-msg="When everything feels like it's falling apart, you remind me that things will be okay. You're my hope when I have none left.">
+                        <div class="gift-wrap"><span class="gift-ribbon">🎀</span></div>
+                        <div class="gift-content"></div>
+                    </div>
+                    <div class="gift-box" data-emoji="🌙" data-title="My Little One" data-msg="You'll always be my little one. No matter how old we get, no matter where life takes us. Always.">
+                        <div class="gift-wrap"><span class="gift-ribbon">🎀</span></div>
+                        <div class="gift-content"></div>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+
+        <!-- PAGE 5 — I DON'T PRETEND (cross-out animation) -->
+        <div class="page" data-page="5">
+            <div class="pg-deco"><div class="g-orb" style="--c:rgba(212,165,116,.05);top:50%;left:-10%"></div></div>
+            <div class="pg-scroll"><div class="pg-inner">
+                <h2 class="serif-title">I need you to<br><span class="hand-accent">know one thing.</span></h2>
+                <div class="strike-list">
+                    <div class="strike-item"><span class="strike-line"></span><p>I don't pretend to care.</p></div>
+                    <div class="strike-item"><span class="strike-line"></span><p>I don't pretend to miss you.</p></div>
+                    <div class="strike-item"><span class="strike-line"></span><p>I don't pretend that you're important to me.</p></div>
+                </div>
+                <div class="truth-reveal">
+                    <p class="truth-big">I genuinely <span class="secret-word" data-msg="More than you'll probably ever know.">care</span> about you.</p>
+                    <p class="truth-deep">Deeply.</p>
+                </div>
+                <p class="soft-text">Not just today. Not just when everything is good.</p>
+                <p class="pink-em">I want to be there with you throughout my life, no matter what happens.</p>
+                <div class="timeline" id="timeline">
+                    <div class="tl-track"><div class="tl-fill"></div></div>
+                    <div class="tl-points">
+                        <div class="tl-pt"><div class="tl-dot"></div><span>Today</span></div>
+                        <div class="tl-pt"><div class="tl-dot"></div><span>Tomorrow</span></div>
+                        <div class="tl-pt"><div class="tl-dot"></div><span>Years from now</span></div>
+                        <div class="tl-pt"><div class="tl-dot tl-glow"></div><span class="t-gold">Still us 🤍</span></div>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+
+        <!-- PAGE 6 — MY SILENCE -->
+        <div class="page" data-page="6">
+            <div class="pg-deco"><div class="g-orb" style="--c:rgba(122,156,198,.04);top:30%;right:-12%"></div></div>
+            <div class="pg-scroll"><div class="pg-inner">
+                <h2 class="serif-title">And please don't<br><span class="hand-accent">misunderstand my silence.</span></h2>
+                <div class="txt-block">
+                    <p>If I don't ask you about your <span class="secret-word" data-msg="I do think about it. I just don't always know how to bring it up.">job</span> every single time…</p>
+                    <p class="accent-line">that does NOT mean I don't care about you.</p>
+                    <p>If I don't ask every question. If I don't check in perfectly. If I don't always know what to say…</p>
+                    <p>it doesn't mean you aren't <span class="secret-word" data-msg="You are one of the most important people in my life.">important</span> to me.</p>
+                    <p>I never wanted to make you feel unwanted or uncared for.</p>
+                    <p>I'm sorry that my actions made you feel that way.</p>
+                </div>
+                <div class="hl-card"><div class="hl-border"></div><p>My inability to show it properly was never a lack of care. 🤍</p></div>
+            </div></div>
+        </div>
+
+        <!-- PAGE 7 — NEVER FORGET (mystery boxes) -->
+        <div class="page" data-page="7">
+            <div class="pg-scroll"><div class="pg-inner pg-wide">
+                <h2 class="serif-title">Things I never want<br><span class="hand-accent">you to forget.</span></h2>
+                <p class="soft-italic">Tap each box to unlock a message 🤍</p>
+                <div class="mystery-box-grid">
+                    <div class="mbox"><div class="mbox-lid">🔒</div><div class="mbox-msg">You are special to me. 🤍</div></div>
+                    <div class="mbox"><div class="mbox-lid">🔒</div><div class="mbox-msg">You are my comfort zone.</div></div>
+                    <div class="mbox"><div class="mbox-lid">🔒</div><div class="mbox-msg">I trust you.</div></div>
+                    <div class="mbox"><div class="mbox-lid">🔒</div><div class="mbox-msg">I care about you.</div></div>
+                    <div class="mbox"><div class="mbox-lid">🔒</div><div class="mbox-msg">I miss you.</div></div>
+                    <div class="mbox"><div class="mbox-lid">🔒</div><div class="mbox-msg">I don't want to lose you.</div></div>
+                    <div class="mbox"><div class="mbox-lid">🔒</div><div class="mbox-msg">You matter more than words. 🤍</div></div>
+                    <div class="mbox"><div class="mbox-lid">🔒</div><div class="mbox-msg">I want you in my life. Always.</div></div>
+                </div>
+                <p class="unlock-counter"><span id="unlock-count">0</span> / 8 unlocked</p>
+            </div></div>
+        </div>
+
+        <!-- PAGE 8 — FUN PLAYFUL PAGE 🎉 -->
+        <div class="page" data-page="8">
+            <div class="pg-deco"><div class="g-orb" style="--c:rgba(196,132,154,.05);top:30%;left:-8%"></div></div>
+            <div class="pg-scroll"><div class="pg-inner pg-wide">
+                <h2 class="serif-title"><span class="hand-accent">okay okay… enough crying. 😂</span></h2>
+                <p class="soft-italic">Let's take a break from all the emotional stuff.</p>
+                <div class="fun-section">
+                    <div class="hug-zone">
+                        <p class="hug-label">You deserve this right now 👇</p>
+                        <button class="hug-btn" id="hug-btn"><span class="hug-emoji">🤗</span><span class="hug-text">Send a Virtual Hug</span></button>
+                        <p class="hug-sub" id="hug-sub"></p>
+                    </div>
+                    <h3 class="fun-subtitle">Things only WE understand 😂</h3>
+                    <div class="fun-grid">
+                        <div class="fun-card bounce-1"><div class="fun-emoji">🤡</div><p>Me purposely annoying you and then acting innocent</p></div>
+                        <div class="fun-card bounce-2"><div class="fun-emoji">😤</div><p>You getting mad at me while I'm just standing there like 🧍‍♀️</p></div>
+                        <div class="fun-card bounce-3"><div class="fun-emoji">🫣</div><p>When I know I messed up but I try to change the topic</p></div>
+                        <div class="fun-card bounce-4"><div class="fun-emoji">💀</div><p>Our fights that literally last 5 minutes and then we act normal</p></div>
+                        <div class="fun-card bounce-5"><div class="fun-emoji">🙄</div><p>You pretending you don't care when you actually care the most</p></div>
+                        <div class="fun-card bounce-6"><div class="fun-emoji">🥹</div><p>Me making a whole website because I don't know how else to say sorry</p></div>
+                    </div>
+                    <p class="fun-footer">see? even while fighting, we're still us. 🤍</p>
+                </div>
+            </div></div>
+        </div>
+
+        <!-- PAGE 9 — SONGS (2 only) -->
+        <div class="page" data-page="9">
+            <div class="pg-scroll"><div class="pg-inner">
+                <h2 class="serif-title">I couldn't say everything…<br><span class="hand-accent">so I recorded it.</span></h2>
+                <p class="soft-italic">Some things are easier to sing than to say. 🤍</p>
+                <div class="song-list">
+                    <div class="song-card" data-idx="0">
+                        <div class="s-num">01</div>
+                        <div class="s-body">
+                            <h3>Song for You</h3>
+                            <p class="s-desc">The words I couldn't say out loud.</p>
+                            <div class="s-ctrl"><button class="s-play"><svg class="ic-play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg><svg class="ic-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button><div class="s-prog"><div class="s-bar"><div class="s-fill"></div></div><div class="s-time"><span class="s-cur">0:00</span><span class="s-dur">0:00</span></div></div></div>
+                            <div class="s-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                        </div>
+                        <audio preload="auto"><source src="audio/audio1.mp3" type="audio/mpeg"><source src="audio/audio1.ogg" type="audio/ogg"></audio>
+                    </div>
+                    <div class="song-card" data-idx="1">
+                        <div class="s-num">02</div>
+                        <div class="s-body">
+                            <h3>I'm Sorry</h3>
+                            <p class="s-desc">Because sometimes a song says it better.</p>
+                            <div class="s-ctrl"><button class="s-play"><svg class="ic-play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg><svg class="ic-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button><div class="s-prog"><div class="s-bar"><div class="s-fill"></div></div><div class="s-time"><span class="s-cur">0:00</span><span class="s-dur">0:00</span></div></div></div>
+                            <div class="s-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                        </div>
+                        <audio preload="auto"><source src="audio/audio2.mp3" type="audio/mpeg"><source src="audio/audio2.ogg" type="audio/ogg"></audio>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+
+        <!-- PAGE 10 — THE APOLOGY -->
+        <div class="page" data-page="10">
+            <div class="pg-deco"><div class="g-orb" style="--c:rgba(196,132,154,.06);top:35%;left:-12%"></div></div>
+            <div class="pg-scroll"><div class="pg-inner">
+                <h2 class="serif-title">So… baby,<br><span class="hand-accent">please listen to me.</span></h2>
+                <div class="txt-block">
+                    <p>I know you're <span class="secret-word" data-msg="And knowing that I caused that hurts me too.">hurt</span>.</p>
+                    <p>And I know saying sorry doesn't magically fix that.</p>
+                    <p>I know I messed up. I know I should have been there.</p>
+                    <p>I know I should have given you more time.</p>
+                    <p>And I know you deserved better from me in those moments.</p>
+                    <p>I'm not asking you to forget what happened.</p>
+                    <p class="pink-em">I'm just asking you to understand that <span class="secret-word" data-msg="I would never intentionally hurt you. Never.">hurting you</span> was never what I wanted.</p>
+                    <p>Please forgive me. Not because I deserve it.</p>
+                    <p class="accent-line">But because I genuinely don't want this distance between us.</p>
+                </div>
+                <div class="maaf-moment"><div class="maaf-glow"></div><p>Please maaf kar nhi maka. 🤍</p></div>
+            </div></div>
+        </div>
+
+        <!-- PAGE 11 — FINAL -->
+        <div class="page" data-page="11">
+            <div class="pg-scroll"><div class="pg-inner pg-center-all">
+                <p class="fin-line">I don't know if this website can fix what I messed up…</p>
+                <p class="fin-line">But I hope it tells you one thing clearly.</p>
+                <h2 class="fin-hero">YOU MATTER TO ME.</h2>
+                <p class="fin-line">More than I know how to explain.</p>
+                <p class="fin-sorry">I'm sorry, baby. 🤍</p>
+                <p class="fin-line">Whenever you're ready… I'm here.</p>
+                <div class="fin-sign"><p>— yours, your best friend,<br>your one and only.<br>so please forgive her nah? 🤍</p></div>
+                <div class="fin-btns">
+                    <button class="fin-btn btn-heard" id="btn-heard">I heard you 🤍</button>
+                    <button class="fin-btn btn-time" id="btn-time">I need some time.</button>
+                </div>
+            </div></div>
+        </div>
+    </div>
+
+    <!-- Bottom nav -->
+    <nav class="bottom-nav hidden" id="bottom-nav">
+        <button class="nav-arrow" id="nav-prev" aria-label="Previous"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <div class="nav-dots" id="nav-dots"></div>
+        <button class="nav-arrow" id="nav-next" aria-label="Next"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        <div class="nav-counter"><span id="nav-cur">1</span> / <span id="nav-total">11</span></div>
+    </nav>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
